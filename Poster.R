@@ -89,4 +89,53 @@ library("FactoMineR")
 library("factoextra")
 res.pca <- PCA(genres.df[,-c(1:2)],  graph = FALSE)
 fviz_screeplot(res.pca, addlabels = TRUE, ylim = c(0, 50))
-fviz_pca_var(res.pca, col.var = "black")
+fviz_pca_var(res.pca, col.var = "cos2",
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), 
+             repel = TRUE)
+
+
+#A simple method to extract the results, for variables, from a PCA output is to use the function get_pca_var() [factoextra package]. This function provides a list of matrices containing all the results for the active variables (coordinates, correlation between variables and axes, squared cosine and contributions)
+var <- get_pca_var(res.pca)
+
+
+# Create a grouping variable using kmeans
+# Create 3 groups of variables (centers = 3)
+set.seed(123)
+res.km <- kmeans(var$coord, centers = 3, nstart = 25)
+grp <- as.factor(res.km$cluster)
+# Color variables by groups
+fviz_pca_var(res.pca, col.var = grp, 
+             legend.title = "Cluster")
+
+res.km <- kmeans(var$coord, centers = 4, nstart = 25)
+grp <- as.factor(res.km$cluster)
+# Color variables by groups
+fviz_pca_var(res.pca, col.var = grp, 
+             legend.title = "Cluster")
+
+#Este me gusta más
+res.km <- kmeans(var$coord, centers = 5, nstart = 25)
+grp <- as.factor(res.km$cluster)
+# Color variables by groups
+fviz_pca_var(res.pca, col.var = grp, 
+             legend.title = "Cluster")
+
+res.km <- kmeans(var$coord, centers = 6, nstart = 25)
+grp <- as.factor(res.km$cluster)
+# Color variables by groups
+fviz_pca_var(res.pca, col.var = grp, 
+             legend.title = "Cluster")
+
+
+# Agrupación propuesta.
+lapply(seq(1:5), function(i) names(res.km$cluster[which(res.km$cluster==i)]))
+
+
+g1<- c("Biography","Drama","History","War")
+g2<- c("Action","Crime","Horror","Mystery","Sci.Fi","Thriller")
+g3 <-c("Comedy","Romance","Music")
+g4<- c("Adventure","Animation","Family","Fantasy")
+g5 <- c("Documentary","Film.Noir","News","Short","Sport","Western","Game.Show","Reality.TV")
+
+#Corroboramos que se distribuyeron todos los géneros.
+length(g1)+length(g2)+length(g3)+length(g4)+length(g5)==dim(ind)[2]
